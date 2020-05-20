@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PostModule } from './modules/post/post.module';
-import { UploadFileModule } from './modules/upload-file/upload-file.module';
+import { PostModule } from './post/post.module';
+import { UsersModule } from './users/users.module';
+import { UploadFileModule } from './upload-file/upload-file.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { UploadFileModule } from './modules/upload-file/upload-file.module';
     }),
     PostModule,
     UploadFileModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
