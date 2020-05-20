@@ -9,6 +9,6 @@ export class UploadFile {
   @Column()
   name: string;
 
-  @Column(type => Post)
+  @Column((type) => Post)
   related: Post[];
 }

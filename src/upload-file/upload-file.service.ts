@@ -16,10 +16,13 @@ export class UploadFileService {
   async insertRelated(id, data) {
     const file = await this.uploadFileRepository.findOne(id);
     console.log('file :', file);
-    await this.uploadFileRepository.update({id}, {
-      name: '2.png',
-      related: [...file.related, { kind: 'avatar' }],
-    });
+    await this.uploadFileRepository.update(
+      { id },
+      {
+        name: '2.png',
+        related: [...file.related, { kind: 'avatar' }],
+      },
+    );
     return { success: true };
   }
 }
