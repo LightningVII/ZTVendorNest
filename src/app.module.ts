@@ -7,7 +7,6 @@ import { UsersModule } from './users/users.module';
 import { UploadFileModule } from './upload-file/upload-file.module';
 import { AuthModule } from './auth/auth.module';
 
-/* if sqlite need import "reflect-metadata": "^0.1.13", */
 @Module({
   imports: [
     TypeOrmModule.forRoot({
