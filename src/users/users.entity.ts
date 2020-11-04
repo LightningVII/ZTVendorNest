@@ -1,9 +1,9 @@
-import { Entity, Column, ObjectID, ObjectIdColumn } from 'typeorm';
+import { Entity, Column, ObjectID, ObjectIdColumn, PrimaryColumn } from 'typeorm';
 
 @Entity('users-permissions_user')
 export class Users {
-  @ObjectIdColumn()
-  id: ObjectID;
+  @PrimaryColumn()
+  id: string;
 
   @Column()
   username: string;

@@ -1,10 +1,10 @@
-import { Entity, Column, ObjectID, ObjectIdColumn } from 'typeorm';
+import { Entity, Column, ObjectID, PrimaryColumn } from 'typeorm';
 import { Post } from '../post/post.entity';
 
 @Entity()
 export class UploadFile {
-  @ObjectIdColumn()
-  id: ObjectID;
+  @PrimaryColumn()
+  id: string;
 
   @Column()
   name: string;

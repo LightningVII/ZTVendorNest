@@ -1,12 +1,12 @@
-import { Entity, Column, ObjectID, ObjectIdColumn } from 'typeorm';
+import { Entity, Column, ObjectID, PrimaryColumn } from 'typeorm';
 
 // @Entity()
 export class Post {
-  @ObjectIdColumn()
-  '_id': ObjectID;
+  @PrimaryColumn()
+  '_id': string;
 
-  @ObjectIdColumn()
-  ref: ObjectID;
+  @PrimaryColumn()
+  ref: string;
 
   @Column()
   field: string;
