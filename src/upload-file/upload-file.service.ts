@@ -13,9 +13,9 @@ export class UploadFileService {
   async index(id) {
     return await this.uploadFileRepository.findOne(id);
   }
-  async insertRelated(id, data) {
+  async insertRelated(id, b) {
     const file = await this.uploadFileRepository.findOne(id);
-    console.log('file :', file);
+    console.log('file :', file, b);
     await this.uploadFileRepository.update(
       { id },
       {

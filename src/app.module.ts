@@ -6,6 +6,7 @@ import { PostModule } from './post/post.module';
 import { UsersModule } from './users/users.module';
 import { UploadFileModule } from './upload-file/upload-file.module';
 import { AuthModule } from './auth/auth.module';
+import { ExcelModule } from './excel/excel.module';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { AuthModule } from './auth/auth.module';
       // port: 27017,
       // username: '',
       // password: '',
-      database: '/Users/Ace/GitHub/ZTVendorStrapi/.tmp/data.db',
+      database: '/Users/whiteace/GitHub/ZTVendorStrapi/.tmp/data.db',
       entities: [__dirname + '/**/**.entity{.ts,.js}'],
       // synchronize: true,
       // useUnifiedTopology: true,
@@ -25,6 +26,7 @@ import { AuthModule } from './auth/auth.module';
     UploadFileModule,
     AuthModule,
     UsersModule,
+    ExcelModule,
   ],
   controllers: [AppController],
   providers: [AppService],
