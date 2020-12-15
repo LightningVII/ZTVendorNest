@@ -5,8 +5,6 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import * as pinyin from 'pinyin';
 
-// Parse a file
-// const workSheetsFromFile = xlsx.parse(`${__dirname}/myFile.xlsx`);
 const empty = (a, d = '') => `${a || ''}`?.trim() || d;
 @Controller('excel')
 export class ExcelController {
