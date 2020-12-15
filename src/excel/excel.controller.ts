@@ -1,8 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post, Headers } from '@nestjs/common';
 import { ExcelService } from './excel.service';
 import xlsx from 'node-xlsx';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
+import * as pinyin from 'pinyin';
 
 // Parse a file
 // const workSheetsFromFile = xlsx.parse(`${__dirname}/myFile.xlsx`);
@@ -14,28 +15,6 @@ export class ExcelController {
   @Get()
   index() {
     // Parse a buffer
-    const sheets = xlsx.parse(readFileSync(resolve('excel.xlsx')));
-    // 大类
-    const categories = sheets[0].data.reduce(
-      (res, cur) => [...res, cur[1]],
-      [],
-    );
-    categories.shift();
-    // 产品分类明细
-    const types = {};
-    sheets.forEach((e, i) => {
-      if (i) {
-        const a = e.data.reduce((res, cur) => {
-          if (cur.length) {
-            const line = Array.from(cur).map((a) => empty(a));
-            return line[2] ? [...res, line[2]] : res;
-          }
-          return res;
-        }, []);
-        a.shift();
-        types[e.name] = a;
-      }
-    });
     const fields = [
       '序号',
       '编码',
@@ -75,10 +54,70 @@ export class ExcelController {
 
     return (
       {
-        categories,
-        types,
         fields,
       } || this.excelService.findCompanies()
     );
+  }
+
+  @Post('categories')
+  createTypes(@Headers('authorization') token) {
+    const sheets = xlsx.parse(readFileSync(resolve('excel.xlsx')));
+    // 大类
+    const categories = sheets[0].data.reduce(
+      (res, cur) => [...res, cur[1]],
+      [],
+    );
+    categories.shift();
+    categories.forEach((element) => {
+      const params = {
+        name: element,
+        value: pinyin(element, {
+          style: pinyin.STYLE_NORMAL, // 设置拼音风格
+        }).join('_'),
+      };
+      this.excelService.createCategory(params, token);
+    });
+    return { categories };
+  }
+
+  @Post('types')
+  createTypers(@Headers('authorization') token) {
+    console.log('token', token);
+    const sheets = xlsx.parse(readFileSync(resolve('excel.xlsx')));
+    const typesMap = {};
+    const types = [];
+    sheets.forEach(async (e, i) => {
+      if (i) {
+        const a = e.data.reduce((res, cur) => {
+          if (cur.length) {
+            const line = Array.from(cur).map((a) => empty(a));
+            return line[2] ? [...res, line[2]] : res;
+          }
+          return res;
+        }, []);
+        a.shift();
+        const b = Array.from(new Set(a));
+        typesMap[e.name] = b;
+        types.push({ [e.name]: typesMap[e.name] });
+
+        const [category] = await this.excelService.findCategory(e.name, token);
+        b.forEach((element: string) => {
+          const params = {
+            name: element,
+            value: pinyin(element, {
+              style: pinyin.STYLE_NORMAL, // 设置拼音风格
+            }).join('_'),
+            vendor_categories: category.id,
+          };
+          console.log('params', params);
+          this.excelService.createType(params, token);
+        });
+      }
+    });
+
+    return {
+      types,
+      typesMap,
+    };
   }
 }
