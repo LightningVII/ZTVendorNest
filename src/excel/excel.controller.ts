@@ -13,6 +13,26 @@ export class ExcelController {
   @Get()
   index() {
     // Parse a buffer
+    const sheets = xlsx.parse(readFileSync(resolve('template.xlsx')));
+    const categories = sheets[0].data.reduce(
+      (res, cur) => [...res, cur[2]],
+      [],
+    );
+    categories.shift();
+    categories.forEach((element) => {
+      const params = {
+        name: element,
+        value: pinyin(element, {
+          style: pinyin.STYLE_NORMAL, // 设置拼音风格
+        }).join('_'),
+      };
+    });
+
+    console.log(
+      'params',
+      Array.from(new Set(categories)).filter((item) => item),
+    );
+
     const fields = [
       '序号',
       '编码',
@@ -42,9 +62,10 @@ export class ExcelController {
     // sheets[1].data[1].indexOf('产品类别') // 列 index
 
     // 通用类数据
-    /* const table = sheets[1].data;
+    /*     const table = sheets[0].data;
     const ty = table.reduce((res, cur) => {
-      if (cur.length) return [...res, Array.from(cur).map((a) => empty(a, '暂无'))][2];
+      if (cur.length)
+        return [...res, Array.from(cur).map((a) => empty(a, '暂无'))][2];
       return res;
     }, []); */
 
@@ -52,35 +73,38 @@ export class ExcelController {
 
     return (
       {
-        fields,
+        categories,
+        // sheets: categories,
       } || this.excelService.findCompanies()
     );
   }
 
   @Post('categories')
   createTypes(@Headers('authorization') token) {
-    const sheets = xlsx.parse(readFileSync(resolve('excel.xlsx')));
+    const sheets = xlsx.parse(readFileSync(resolve('template.xlsx')));
     // 大类
     const categories = sheets[0].data.reduce(
-      (res, cur) => [...res, cur[1]],
+      (res, cur) => [...res, cur[2]],
       [],
     );
     categories.shift();
-    categories.forEach((element) => {
-      const params = {
-        name: element,
-        value: pinyin(element, {
-          style: pinyin.STYLE_NORMAL, // 设置拼音风格
-        }).join('_'),
-      };
-      this.excelService.createCategory(params, token);
-    });
+    Array.from(new Set(categories))
+      .filter((item) => item)
+      .forEach((element: string) => {
+        const params = {
+          name: element,
+          value: pinyin(element, {
+            style: pinyin.STYLE_NORMAL, // 设置拼音风格
+          }).join('_'),
+        };
+        this.excelService.createCategory(params, token);
+      });
     return { categories };
   }
 
   @Post('types')
   createTypers(@Headers('authorization') token) {
-    console.log('token', token);
+    /* console.log('token', token);
     const sheets = xlsx.parse(readFileSync(resolve('excel.xlsx')));
     const typesMap = {};
     const types = [];
@@ -111,11 +135,43 @@ export class ExcelController {
           this.excelService.createType(params, token);
         });
       }
-    });
+    }); */
 
-    return {
-      types,
-      typesMap,
-    };
+    const sheets = xlsx.parse(readFileSync(resolve('template.xlsx')));
+    // 大类
+    const types = sheets[0].data.reduce(
+      (res, cur) => [
+        ...res,
+        {
+          a: cur[3],
+          b: cur[2],
+        },
+      ],
+      [],
+    );
+    types.shift();
+    const newTypes = types
+      .reduce((res, cur) => {
+        if (!res.find((item) => item.a === cur.a)) return [...res, cur];
+        return res;
+      }, [])
+      .filter((item) => {
+        if (item.a) return item;
+      });
+    newTypes.forEach(async (element: any) => {
+      const [category] = await this.excelService.findCategory(element.b, token);
+
+      console.log('category', category);
+      const params = {
+        name: element.a,
+        value: pinyin(element.a, {
+          style: pinyin.STYLE_NORMAL, // 设置拼音风格
+        }).join('_'),
+        vendor_categories: category.id,
+      };
+      this.excelService.createType(params, token);
+      console.log('params', params);
+    });
+    return { newTypes };
   }
 }

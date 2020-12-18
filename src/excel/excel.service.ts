@@ -35,7 +35,10 @@ export class ExcelService {
   }
 
   async findCategory(name: string, token) {
+    console.log('object', name);
     const headers = { Authorization: token };
+
+    console.log('object', encodeURI(name));
 
     return (
       (await this.httpService
