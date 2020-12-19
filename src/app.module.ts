@@ -7,7 +7,7 @@ import { UsersModule } from './users/users.module';
 import { UploadFileModule } from './upload-file/upload-file.module';
 import { AuthModule } from './auth/auth.module';
 import { ExcelModule } from './excel/excel.module';
-
+import * as path from 'path';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -16,7 +16,7 @@ import { ExcelModule } from './excel/excel.module';
       // port: 27017,
       // username: '',
       // password: '',
-      database: '/Users/whiteace/GitHub/ZTVendorStrapi/.tmp/data.db',
+      database: path.resolve(process.env.PWD, '../ZTVendorStrapi/.tmp/data.db'),
       entities: [__dirname + '/**/**.entity{.ts,.js}'],
       // synchronize: true,
       // useUnifiedTopology: true,
