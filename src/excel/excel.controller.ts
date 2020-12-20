@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Headers, Put } from '@nestjs/common';
 import { ExcelService } from './excel.service';
 import xlsx from 'node-xlsx';
 import { readFileSync } from 'fs';
@@ -155,5 +155,10 @@ export class ExcelController {
       this.excelService.createType(params, token);
     });
     return { newTypes };
+  }
+
+  @Put('companies')
+  updateCompanies(@Headers('authorization') token) {
+    this.excelService.updateCompanies(token);
   }
 }

@@ -34,6 +34,16 @@ export class ExcelService {
     );
   }
 
+  async findCompaniesByTelephone() {
+    return (
+      (await this.httpService
+        .get(`${strapiPath}/companies?telephone=undefined`)
+        .pipe(map((res) => res.data))
+        .toPromise()
+        .catch((e) => e.data)) || {}
+    );
+  }
+
   async findCategories(name: string, token) {
     const headers = { Authorization: token };
     return (
@@ -133,5 +143,33 @@ export class ExcelService {
         .toPromise()
         .catch((e) => console.log('e', e))) || {}
     );
+  }
+
+  async updateCompany(id: string, data, token) {
+    const headers = { Authorization: token };
+    console.log('id', id);
+    return (
+      (await this.httpService
+        .put(`${strapiPath}/companies/${id}`, data, {
+          headers,
+        })
+        .pipe()
+        .toPromise()
+        .catch((e) => e.data)) || {}
+    );
+  }
+
+  async updateCompanies(token) {
+    const errordata = await this.findCompaniesByTelephone();
+
+    errordata.forEach((element) => {
+      this.updateCompany(
+        element.id,
+        {
+          telephone: null,
+        },
+        token,
+      );
+    });
   }
 }
